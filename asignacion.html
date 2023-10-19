@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Algoritmo de Asignación</title>
+</head>
+<body>
+    <script>
+function convertToCostMatrix(adjacencyMatrix) {
+    const n = adjacencyMatrix.length;
+    const costMatrix = [];
+
+    for (let i = 0; i < n; i++) {
+        costMatrix.push([]);
+        for (let j = 0; j < adjacencyMatrix[i].length; j++) {
+            if (adjacencyMatrix[i][j] !== -1) {
+                costMatrix[i].push(adjacencyMatrix[i][j]);
+            } else {
+                costMatrix[i].push(Infinity); // Usar "Infinity" en lugar de -1
+            }
+        }
+    }
+
+    return costMatrix;
+}
+
+function convertToCostMatrix1(adjacencyMatrix) {
+    const n = adjacencyMatrix.length;
+    const costMatrix = [];
+
+    for (let i = 0; i < n; i++) {
+        costMatrix.push([]);
+        for (let j = 0; j < adjacencyMatrix[i].length; j++) {
+            if (adjacencyMatrix[i][j] !== -1) {
+                costMatrix[i].push(adjacencyMatrix[i][j]);
+            } else {
+                costMatrix[i].push(-1); // Usar "Infinity" en lugar de -1
+            }
+        }
+    }
+
+    return costMatrix;
+}
+
+function minCostAssignment(costMatrix) {
+    const n = costMatrix.length; // Número de nodos de origen y destino
+    const assigned = new Array(n).fill(false); // Arreglo para rastrear nodos asignados
+    const assignment = []; // Arreglo para almacenar las asignaciones
+
+    // Paso 1: Asignar nodos basados en filas de menor costo.
+    for (let i = 0; i < n; i++) {
+        // Copiamos la fila actual de la matriz de costos.
+        const row = costMatrix[i].slice();
+
+        // Encontramos el costo mínimo en la fila.
+        let minVal = Math.min(...row);
+
+        // Si el costo mínimo es "Infinity," esto significa que no hay conexiones directas.
+        if (minVal === Infinity) {
+            continue; // Ignoramos esta fila y pasamos a la siguiente.
+        }
+
+        // Encontramos el índice del nodo de destino con el costo mínimo.
+        let minIndex = row.indexOf(minVal);
+
+        // Marcar el nodo de origen como asignado.
+        assigned[i] = true;
+
+        // Registrar la asignación en el formato [nodo de origen, nodo de destino].
+        assignment.push([i, minIndex]);
+    }
+
+    // Paso 2: Continuar con el algoritmo de asignación de costo mínimo.
+    while (assignment.length < n) {
+        // Inicializamos variables para rastrear el costo mínimo y los índices de los nodos.
+        let minVal = Infinity;
+        let minI = -1;
+        let minJ = -1;
+
+        // Recorremos la matriz de costos y buscamos los nodos no asignados.
+        for (let i = 0; i < n; i++) {
+            if (!assigned[i]) { // Si el nodo de origen no está asignado.
+                for (let j = 0; j < costMatrix[i].length; j++) {
+                    if (!assigned[j] && costMatrix[i][j] < minVal) { // Si el nodo de destino no está asignado y el costo es menor.
+                        minVal = costMatrix[i][j];
+                        minI = i; // Nodo de origen con costo mínimo.
+                        minJ = j; // Nodo de destino con costo mínimo.
+                    }
+                }
+            }
+        }
+
+        // Marcar ambos nodos (de origen y destino) como asignados.
+        assigned[minI] = true;
+        assigned[minJ] = true;
+
+        // Registrar la asignación en el formato [nodo de origen, nodo de destino].
+        assignment.push([minI, minJ]);
+    }
+
+    return assignment; // Devolver la asignación óptima.
+}
+
+function maxCostAssignment(costMatrix) {
+    const n = costMatrix.length; // Número de nodos de origen y destino
+    const assigned = new Array(n).fill(false); // Arreglo para rastrear nodos asignados
+    const assignment = []; // Arreglo para almacenar las asignaciones
+
+    // Paso 1: Asignar nodos basados en filas de mayor costo.
+    for (let i = 0; i < n; i++) {
+        // Copiamos la fila actual de la matriz de costos.
+        const row = costMatrix[i].slice();
+
+        // Encontramos el costo máximo en la fila.
+        let maxVal = Math.max(...row);
+
+        // Si el costo máximo es "-Infinity," esto significa que no hay conexiones directas.
+        if (maxVal === -Infinity) {
+            continue; // Ignoramos esta fila y pasamos a la siguiente.
+        }
+
+        // Encontramos el índice del nodo de destino con el costo máximo.
+        let maxIndex = row.indexOf(maxVal);
+
+        // Marcar el nodo de origen como asignado.
+        assigned[i] = true;
+
+        // Registrar la asignación en el formato [nodo de origen, nodo de destino].
+        assignment.push([i, maxIndex]);
+    }
+
+    // Paso 2: Continuar con el algoritmo de asignación de costo máximo.
+    while (assignment.length < n) {
+        // Inicializamos variables para rastrear el costo máximo y los índices de los nodos.
+        let maxVal = -Infinity;
+        let maxI = -1;
+        let maxJ = -1;
+
+        // Recorremos la matriz de costos y buscamos los nodos no asignados.
+        for (let i = 0; i < n; i++) {
+            if (!assigned[i]) { // Si el nodo de origen no está asignado.
+                for (let j = 0; j < costMatrix[i].length; j++) {
+                    if (!assigned[j] && costMatrix[i][j] > maxVal) { // Si el nodo de destino no está asignado y el costo es mayor.
+                        maxVal = costMatrix[i][j];
+                        maxI = i; // Nodo de origen con costo máximo.
+                        maxJ = j; // Nodo de destino con costo máximo.
+                    }
+                }
+            }
+        }
+
+        // Marcar ambos nodos (de origen y destino) como asignados.
+        assigned[maxI] = true;
+        assigned[maxJ] = true;
+
+        // Registrar la asignación en el formato [nodo de origen, nodo de destino].
+        assignment.push([maxI, maxJ]);
+    }
+
+    return assignment; // Devolver la asignación óptima de costo máximo.
+}
+
+
+const adjacencyMatrix = [
+    [4, -1, 3, -1],
+    [-1, 2, -1, 5],
+    [1, -1, -1, 6]
+];
+
+const costMatrix = convertToCostMatrix(adjacencyMatrix);
+console.log("Matriz de Costos:", costMatrix);
+
+const assignment = minCostAssignment(costMatrix);
+console.log("Asignación:", assignment);
+
+const costMatrix1 = convertToCostMatrix(adjacencyMatrix);
+console.log("Matriz de Costos:", costMatrix);
+
+const assignment1 = maxCostAssignment(costMatrix1);
+console.log("Asignación:", assignment1);
+
+
+
+
+    </script>
+</body>
+</html>
